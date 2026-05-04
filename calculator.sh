@@ -1,20 +1,11 @@
 #!/bin/bash
 
-# Simple command-line calculator
+# Command-Line Calculator in Bash
+# This script performs basic arithmetic operations.
 
-# Function to log history
-log_history() {
-    echo "$1" >> history.txt
-}
-
-# Usage function
-usage() {
-    echo "Usage: $0 num1 operator num2"
-}
-
-# Check number of arguments
-if [ $# -ne 3 ]; then
-    usage
+# Check if the correct number of arguments are provided
+if [ "$#" -ne 3 ]; then
+    echo "Usage: ./calculator.sh num1 operator num2"
     exit 1
 fi
 
@@ -22,30 +13,22 @@ num1=$1
 operator=$2
 num2=$3
 
-# Perform calculation
-case $operator in
+# Supported operators
+case "$operator" in
     +)
         result=$((num1 + num2))
-    ;;
+        ;; 
     -)
         result=$((num1 - num2))
-    ;;
-    \*)
-        result=$((num1 * num2))
-    ;;
-    /)
-        if [ $num2 -eq 0 ]; then
-            echo "Error: Division by zero"
-            exit 1
-        fi
-        result=$((num1 / num2))
-    ;;
+        ;; 
     *)
         echo "Unsupported operator: $operator"
         exit 1
-    ;;
+        ;; 
 esac
 
-# Output result
+# Output the result
 echo "Result: $result"
-log_history "$num1 $operator $num2 = $result"
+
+# Append to history.txt
+{ echo "$num1 $operator $num2 = $result" >> history.txt; }

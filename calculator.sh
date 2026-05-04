@@ -1,29 +1,53 @@
 #!/bin/bash
 
-# Check if the number of arguments is exactly 3
+append_history() {
+    echo "$1" >> history.txt
+}
+
+# Initialize Variables
+num1="${1}"
+num2="${2}"
+operator="${3}"
+
+# Input Validation
 if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 num1 operator num2"
+    echo "Usage: ./calculator.sh <num1> <operator> <num2>"
     exit 1
 fi
 
-# Capture arguments
-num1="$1"
-operator="$2"
-num2="$3"
-
-# Validate operands using regex
-if ! [[ $num1 =~ ^-?[0-9]+(\.[0-9]+)?$ ]] || ! [[ $num2 =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
-    echo "Invalid operand: $num1 or $num2"
+# Check if Operands are Numeric
+if ! [[ "$num1" =~ ^-?[0-9]+(\.[0-9]+)?$ ]] || ! [[ "$num2" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
+    echo "Error: Both operands must be valid numbers."
     exit 1
 fi
 
-# Validate operator
-if [[ ! $operator =~ ^[+\-*\/]$ ]]; then
-    echo "Unsupported operator: $operator"
-    exit 1
-fi
+# Perform the Calculation
+case "$operator" in
+    "+")
+        result=$(echo "$num1 + $num2" | bc)
+        ;;  
+    "-")
+        result=$(echo "$num1 - $num2" | bc)
+        ;;  
+    "*")
+        result=$(echo "$num1 * $num2" | bc)
+        ;;  
+    "/")
+        # Handle Division by Zero
+        if [ "${num2}" -eq 0 ]; then
+            echo "Error: Division by zero."
+            exit 1
+        fi
+        result=$(echo "$num1 / $num2" | bc)
+        ;;  
+    *)
+        echo "Error: Unsupported operator '$operator'."
+        exit 1
+        ;; 
+esac
 
-# Print validated inputs (for debugging)
-echo "Operands: num1=$num1, num2=$num2, Operator: $operator"
+# Output the Result
+echo "Result: $result"
 
-# Proceed to calculation (placeholder for further logic)
+# Append Calculation to History
+append_history "$num1 $operator $num2 = $result"

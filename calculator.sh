@@ -1,53 +1,51 @@
 #!/bin/bash
 
-append_history() {
+# Simple command-line calculator
+
+# Function to log history
+log_history() {
     echo "$1" >> history.txt
 }
 
-# Initialize Variables
-num1="${1}"
-num2="${2}"
-operator="${3}"
+# Usage function
+usage() {
+    echo "Usage: $0 num1 operator num2"
+}
 
-# Input Validation
-if [ "$#" -ne 3 ]; then
-    echo "Usage: ./calculator.sh <num1> <operator> <num2>"
+# Check number of arguments
+if [ $# -ne 3 ]; then
+    usage
     exit 1
 fi
 
-# Check if Operands are Numeric
-if ! [[ "$num1" =~ ^-?[0-9]+(\.[0-9]+)?$ ]] || ! [[ "$num2" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
-    echo "Error: Both operands must be valid numbers."
-    exit 1
-fi
+num1=$1
+operator=$2
+num2=$3
 
-# Perform the Calculation
-case "$operator" in
-    "+")
-        result=$(echo "$num1 + $num2" | bc)
-        ;;  
-    "-")
-        result=$(echo "$num1 - $num2" | bc)
-        ;;  
-    "*")
-        result=$(echo "$num1 * $num2" | bc)
-        ;;  
-    "/")
-        # Handle Division by Zero
-        if [ "${num2}" -eq 0 ]; then
-            echo "Error: Division by zero."
+# Perform calculation
+case $operator in
+    +)
+        result=$((num1 + num2))
+    ;;
+    -)
+        result=$((num1 - num2))
+    ;;
+    \*)
+        result=$((num1 * num2))
+    ;;
+    /)
+        if [ $num2 -eq 0 ]; then
+            echo "Error: Division by zero"
             exit 1
         fi
-        result=$(echo "$num1 / $num2" | bc)
-        ;;  
+        result=$((num1 / num2))
+    ;;
     *)
-        echo "Error: Unsupported operator '$operator'."
+        echo "Unsupported operator: $operator"
         exit 1
-        ;; 
+    ;;
 esac
 
-# Output the Result
+# Output result
 echo "Result: $result"
-
-# Append Calculation to History
-append_history "$num1 $operator $num2 = $result"
+log_history "$num1 $operator $num2 = $result"
